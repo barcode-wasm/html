@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode.WASM Easy-8-Steps</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        h1 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        h2 { color: #555; margin-top: 30px; }
+        .result { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; min-height: 100px; border: 1px solid #e0e0e0; }
+        .result img, .result svg { max-width: 100%; height: auto; }
+        .controls { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        button { padding: 12px 24px; font-size: 16px; cursor: pointer; background: #667eea; color: white; border: none; border-radius: 6px; }
+        button:hover { background: #5a6fd6; }
+        .radio-group { display: flex; gap: 16px; align-items: center; }
+        .radio-group label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 14px; }
+        .step { color: #569cd6; font-weight: bold; }
+        .comment { color: #6a9955; }
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+        .tip { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+        a { color: #667eea; }
+    </style>
+</head>
+<body>
+    <h1>🔲 Barcode.WASM Easy-8-Steps</h1>
+    <p>Barcode.WASMの使い方を<strong>たった8ステップ</strong>で理解できるサンプルです。<br>
+    まずは下のボタンを押して、バーコードが生成されることを確認してください。</p>
+
+    <h2>🎯 動作確認</h2>
+    <div class="controls">
+        <button onclick="generate1D()">1次元バーコード生成</button>
+        <button onclick="generate2D()">2次元バーコード生成</button>
+        <div class="radio-group">
+            <label><input type="radio" name="format" value="png" checked> PNG</label>
+            <label><input type="radio" name="format" value="svg"> SVG</label>
+        </div>
+    </div>
+    <div id="result" class="result">⏳ WASMモジュール初期化中...</div>
+
+    <h2>📝 コード解説（8ステップ）</h2>
+    
+    <div class="tip">
+        💡 <strong>ヒント</strong>: このHTMLファイルのソースコードを見ると、下記と同じコードが実際に動いています。
+    </div>
+
+    <pre><code><span class="comment">// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="comment">//  1次元バーコード生成の例（CODE128）</span>
+<span class="comment">// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="step">// Step 1:</span> モジュールのインポート
+<span class="keyword">import</span> Module <span class="keyword">from</span> <span class="string">'./barcode.js'</span>;
+
+<span class="step">// Step 2:</span> モジュールの初期化（非同期）
+<span class="keyword">const</span> barcodeModule = <span class="keyword">await</span> Module();
+
+<span class="step">// Step 3:</span> バーコードインスタンス作成
+<span class="keyword">const</span> barcode = <span class="keyword">new</span> barcodeModule.Code128();
+<span class="comment">// ↑ 他のバーコード: Code39, Code93, Jan13, QR, DataMatrix など</span>
+
+<span class="step">// Step 4:</span> 指定幅ぴったり調整（省略可）
+barcode.setFitWidth(<span class="keyword">true</span>);
+<span class="comment">// ↑ false にすると、指定幅以内で高精度なバーコードを出力</span>
+
+<span class="step">// Step 5:</span> 出力形式設定（省略可、デフォルトはPNG）
+<span class="keyword">if</span> (isSvg) barcode.setOutputFormat(<span class="string">'svg'</span>);
+
+<span class="step">// Step 6:</span> バーコード生成
+<span class="keyword">const</span> result = barcode.draw(<span class="string">"Hello 12345"</span>, 400, 100);
+<span class="comment">//                         ↑データ      ↑幅  ↑高さ</span>
+
+<span class="step">// Step 7:</span> HTMLに表示
+<span class="keyword">if</span> (isSvg) {
+    element.innerHTML = result;                      <span class="comment">// SVG: そのまま挿入</span>
+} <span class="keyword">else</span> {
+    element.innerHTML = <span class="string">'&lt;img src="'</span> + result + <span class="string">'"&gt;'</span>;  <span class="comment">// PNG: imgタグ</span>
+}
+
+<span class="step">// Step 8:</span> メモリ解放（重要！）
+barcode.delete();
+</code></pre>
+
+    <div class="note">
+        ⚠️ <strong>重要</strong>: WASMはガベージコレクションされません。<code>delete()</code> を忘れるとメモリリークします。
+    </div>
+
+    <h2>🔄 バーコードを変更するには</h2>
+    
+    <p><strong>Step 3</strong> のクラス名を変更するだけです：</p>
+
+    <pre><code><span class="comment">// 1次元バーコードの例</span>
+<span class="keyword">new</span> barcodeModule.Code128()     <span class="comment">// CODE128（英数字・記号OK）</span>
+<span class="keyword">new</span> barcodeModule.Code39()      <span class="comment">// CODE39（英大文字・数字のみ）</span>
+<span class="keyword">new</span> barcodeModule.Jan13()       <span class="comment">// JAN-13（数字13桁）</span>
+
+<span class="comment">// 2次元バーコードの例</span>
+<span class="keyword">new</span> barcodeModule.QR()          <span class="comment">// QRコード</span>
+<span class="keyword">new</span> barcodeModule.DataMatrix()  <span class="comment">// DataMatrix</span>
+</code></pre>
+
+    <div class="tip">
+        📖 全18種類のバーコードと詳細なAPIは <a href="barcode.wasm.md"><strong>barcode.wasm.md</strong></a> を参照してください。
+    </div>
+
+    <h2>📋 ファイル構成</h2>
+    <pre><code>your-project/
+├── Easy-8-Steps.html   <span class="comment">← このファイル（またはあなたのHTML）</span>
+├── barcode.js          <span class="comment">← WASMローダー（必須）</span>
+└── barcode.wasm        <span class="comment">← WASMバイナリ（必須）</span>
+</code></pre>
+
+    <!-- ========== 実際に動作するコード ========== -->
+    <script type="module">
+        // Step 1: モジュールのインポート
+        import Module from './barcode.js';
+        
+        let barcodeModule = null;
+        
+        // Step 2: モジュールの初期化
+        try {
+            barcodeModule = await Module();
+            document.getElementById('result').textContent = '✅ 準備完了！ボタンをクリックしてください';
+        } catch (error) {
+            document.getElementById('result').textContent = '❌ 初期化失敗: ' + error.message;
+        }
+
+        // 出力形式を取得
+        function getOutputFormat() {
+            return document.querySelector('input[name="format"]:checked').value;
+        }
+
+        // 1次元バーコード生成（CODE128）
+        window.generate1D = function() {
+            if (!barcodeModule) { alert('初期化されていません'); return; }
+
+            document.getElementById('result').innerHTML = '';
+            const isSvg = getOutputFormat() === 'svg';
+
+            // Step 3: バーコードインスタンス作成
+            const barcode = new barcodeModule.Code128();
+
+            // Step 4: 指定幅ぴったり調整（省略可）
+            barcode.setFitWidth(true);
+
+            // Step 5: 出力形式設定（省略可、デフォルトはPNG）
+            if (isSvg) barcode.setOutputFormat('svg');
+
+            // Step 6: バーコード生成
+            const result = barcode.draw("Hello 12345", 400, 100);
+
+            // Step 7: HTMLに表示
+            if (isSvg) {
+                document.getElementById('result').innerHTML = result;
+            } else {
+                document.getElementById('result').innerHTML = '<img src="' + result + '">';
+            }
+
+            // Step 8: メモリ解放（重要！）
+            barcode.delete();
+        }
+
+        // 2次元バーコード生成（QRコード）
+        window.generate2D = function() {
+            if (!barcodeModule) { alert('初期化されていません'); return; }
+
+            document.getElementById('result').innerHTML = '';
+            const isSvg = getOutputFormat() === 'svg';
+
+            // Step 3: バーコードインスタンス作成
+            const barcode = new barcodeModule.QR();
+
+            // Step 4: 指定幅ぴったり調整（省略可）
+            barcode.setFitWidth(true);
+
+            // Step 5: 出力形式設定（省略可、デフォルトはPNG）
+            if (isSvg) barcode.setOutputFormat('svg');
+
+            // Step 6: バーコード生成（2次元は size のみ指定）
+            const result = barcode.draw("https://www.pao.ac/", 200);
+
+            // Step 7: HTMLに表示
+            if (isSvg) {
+                document.getElementById('result').innerHTML = result;
+            } else {
+                document.getElementById('result').innerHTML = '<img src="' + result + '">';
+            }
+
+            // Step 8: メモリ解放（重要！）
+            barcode.delete();
+        }
+    </script>
+</body>
+</html>
