@@ -8,7 +8,7 @@
 
 **バージョン 1.0**
 
-**2024年12月**
+**2026年1月**
 
 ---
 
@@ -1633,6 +1633,50 @@ barcode.setSymbolType('STACKED_OMNIDIRECTIONAL');
 
 **デフォルト:** `'OMNIDIRECTIONAL'`
 
+#### getSymbolType()
+
+現在のシンボルタイプを取得します。
+
+| 戻り値 | 型 | 説明 |
+|--------|------|------|
+| (戻り値) | number | 0: Omni, 1: Stacked |
+
+```javascript
+const type = barcode.getSymbolType();
+```
+
+#### encode(data)
+
+データをエンコードします。
+
+| パラメータ | 型 | 説明 |
+|------------|------|------|
+| data | string | エンコードするデータ |
+
+| 戻り値 | 型 | 説明 |
+|--------|------|------|
+| (戻り値) | boolean | 成功: true, 失敗: false |
+
+```javascript
+const success = barcode.encode('01234567890123');
+```
+
+#### calculateCheckDigit(data) [静的メソッド]
+
+チェックディジットを計算します。クラスメソッドとして呼び出します。
+
+| パラメータ | 型 | 説明 |
+|------------|------|------|
+| data | string | 13桁のデータ |
+
+| 戻り値 | 型 | 説明 |
+|--------|------|------|
+| (戻り値) | string | チェックディジットを含む14桁のデータ |
+
+```javascript
+const dataWithCheck = module.GS1DataBar14.calculateCheckDigit('0123456789012');
+```
+
 ### 使用例
 
 ```javascript
@@ -1642,6 +1686,10 @@ barcode.setSymbolType('OMNIDIRECTIONAL');
 barcode.setOutputFormat('png');
 const result = barcode.draw('1234567890128', 200, 80);
 barcode.delete();
+
+// チェックディジット計算（静的メソッド）
+const dataWithCheck = module.GS1DataBar14.calculateCheckDigit('0123456789012');
+console.log(dataWithCheck);  // チェックディジット付きデータ
 ```
 
 ---
@@ -1938,6 +1986,20 @@ qr.setEncodeMode('AUTO');
 
 **デフォルト:** `'AUTO'`
 
+#### setFitWidth(fit)
+
+指定サイズにフィットさせるかどうかを設定します。
+
+| パラメータ | 型 | 説明 |
+|------------|------|------|
+| fit | boolean | true: フィットさせる, false: させない |
+
+```javascript
+qr.setFitWidth(true);
+```
+
+**デフォルト:** `false`
+
 ### 使用例
 
 ```javascript
@@ -1945,6 +2007,7 @@ const qr = new module.QR();
 qr.setStringEncoding('utf-8');
 qr.setErrorCorrectionLevel('M');
 qr.setVersion(0);
+qr.setFitWidth(true);
 qr.setOutputFormat('svg');  // SVG出力
 const result = qr.draw('https://www.pao.ac/ 日本語OK', 300);
 qr.delete();
@@ -2046,6 +2109,20 @@ dm.setEncodeScheme('AUTO');
 
 **デフォルト:** `'AUTO'`
 
+#### setFitWidth(fit)
+
+指定サイズにフィットさせるかどうかを設定します。
+
+| パラメータ | 型 | 説明 |
+|------------|------|------|
+| fit | boolean | true: フィットさせる, false: させない |
+
+```javascript
+dm.setFitWidth(true);
+```
+
+**デフォルト:** `false`
+
 ### GS1-DataMatrix
 
 GS1データを格納する場合は、データの先頭に `{FNC1}` を付けます。
@@ -2061,6 +2138,7 @@ const dm = new module.DataMatrix();
 dm.setStringEncoding('utf-8');
 dm.setCodeSize('AUTO');
 dm.setEncodeScheme('AUTO');
+dm.setFitWidth(true);
 dm.setOutputFormat('svg');
 const result = dm.draw('Hello World', 200);
 dm.delete();
@@ -2199,6 +2277,20 @@ pdf.setYHeight(3);
 
 **デフォルト:** `3`
 
+#### setFitWidth(fit)
+
+指定幅にフィットさせるかどうかを設定します。
+
+| パラメータ | 型 | 説明 |
+|------------|------|------|
+| fit | boolean | true: フィットさせる, false: させない |
+
+```javascript
+pdf.setFitWidth(true);
+```
+
+**デフォルト:** `false`
+
 ### 使用例
 
 ```javascript
@@ -2209,6 +2301,7 @@ pdf.setColumns(4);
 pdf.setRows(0);
 pdf.setAspectRatio(3.0);
 pdf.setYHeight(3);
+pdf.setFitWidth(true);
 pdf.setOutputFormat('svg');
 const result = pdf.draw('Hello World 日本語テスト', 400);
 pdf.delete();
@@ -2285,6 +2378,6 @@ Barcode.wasm は有限会社パオ・アット・オフィスの製品です。
 
 **バージョン 1.0**
 
-**© 2024 有限会社 パオ・アット・オフィス**
+**© 2026 有限会社 パオ・アット・オフィス**
 
 ---
